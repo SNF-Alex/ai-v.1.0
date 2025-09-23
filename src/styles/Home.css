@@ -1,0 +1,208 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+:root {
+  --primary-light: #1976d2;
+  --primary-dark: #1a1a2e;
+  --accent-light: #e3eafc;
+  --accent-dark: #21e675;
+  --background-light: #fff;
+  --background-dark: #181818;
+  --text-light: #222;
+  --text-dark: #eee;
+}
+
+body, .home-container, .thespis-name, .theme-toggle, .chat-input, .send-btn {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+body[data-theme='light'] {
+  background: var(--background-light);
+  color: var(--text-light);
+}
+body[data-theme='dark'] {
+  background: var(--background-dark);
+  color: var(--text-dark);
+}
+
+
+.home-container.no-scroll {
+  width: 100vw;
+  height: 100vh;
+  min-height: 192px;
+  min-width: 100vw;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--background-light);
+}
+body[data-theme='dark'] .home-container.no-scroll {
+  background: var(--background-dark);
+}
+
+.thespis-name {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-light);
+  z-index: 10;
+}
+body[data-theme='dark'] .thespis-name {
+  color: var(--accent-dark);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--primary-light);
+  z-index: 10;
+}
+body[data-theme='dark'] .theme-toggle {
+  color: var(--accent-dark);
+}
+
+
+.chat-input-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, 0);
+  width: 70vw;
+  max-width: 600px;
+  min-width: 220px;
+  display: flex;
+  align-items: flex-end;
+  background: transparent;
+  z-index: 5;
+}
+
+/* Auto-grow textarea styles */
+.chat-input {
+  flex: 1;
+  resize: none;
+  border: 2px solid var(--primary-light);
+  background: var(--background-light);
+  color: var(--text-light);
+  border-radius: 18px;
+  padding: 16px 56px 16px 16px;
+  font-size: 1.1rem;
+  min-height: 48px;
+  max-height: 160px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border 0.2s, height 0.2s;
+  overflow-y: auto;
+  word-break: break-word;
+  line-height: 1.5;
+  scrollbar-width: none; /* Firefox */
+}
+.chat-input::-webkit-scrollbar {
+  display: none;
+}
+
+body, html {
+  overflow: hidden !important;
+}
+body[data-theme='dark'] .chat-input {
+  border-color: var(--accent-dark);
+  background: var(--background-dark);
+  color: var(--text-dark);
+}
+
+/* Always bottom right for send button */
+.send-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  background: none;
+  border: none;
+  color: var(--primary-light);
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body[data-theme='dark'] .send-btn {
+  color: var(--accent-dark);
+}
+
+/* Hint popup for empty input */
+.hint-popup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -56px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid var(--primary-light);
+  color: var(--text-light);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+body[data-theme='dark'] .hint-popup {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--accent-dark);
+  color: var(--text-dark);
+}
+.hint-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem; /* make X a bit bigger */
+  width: 28px;
+  height: 28px; /* fixed tap target ensures vertical centering */
+  line-height: 0; /* remove baseline offset */
+  padding: 0;
+  right: 0;
+}
+
+@media (max-width: 600px) {
+  .theme-toggle {
+    font-size: 1.5rem;
+    top: 12px;
+    right: 12px;
+  }
+  .thespis-name {
+    font-size: 1.2rem;
+    top: 12px;
+    left: 12px;
+  }
+  .chat-input-wrapper {
+    width: 90vw;
+    max-width: 98vw;
+    top: 60%;
+  }
+  .chat-input {
+    font-size: 1rem;
+    padding: 12px 44px 12px 12px;
+    min-height: 40px;
+  }
+  .send-btn {
+    font-size: 1.3rem;
+    right: 8px;
+    bottom: 8px;
+  }
+}
