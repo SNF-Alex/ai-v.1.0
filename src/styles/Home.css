@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 :root {
@@ -10,6 +9,8 @@
   --background-dark: #181818;
   --text-light: #222;
   --text-dark: #eee;
+  --sidebar-light: #e0e2e6;   /* updated: slightly darker neutral gray */
+  --sidebar-dark: #23272f;    /* neutral dark gray */
 }
 
 body, .home-container, .thespis-name, .theme-toggle, .chat-input, .send-btn {
@@ -25,6 +26,13 @@ body[data-theme='dark'] {
   color: var(--text-dark);
 }
 
+
+/* Reset margin/padding for html, body, and home-container */
+html, body, .home-container.no-scroll {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 .home-container.no-scroll {
   width: 100vw;
@@ -52,7 +60,10 @@ body[data-theme='dark'] .home-container.no-scroll {
   font-size: 2rem;
   font-weight: 700;
   color: var(--primary-light);
-  z-index: 10;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 body[data-theme='dark'] .thespis-name {
   color: var(--accent-dark);
@@ -74,6 +85,26 @@ body[data-theme='dark'] .theme-toggle {
 }
 
 
+/* Sidebar overlay styles */
+.sidebar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 30vw;
+  min-width: 180px;
+  max-width: 340px;
+  background: var(--sidebar-light);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.07);
+  z-index: 8;
+  margin: 0;
+  padding: 0;
+  /* No border radius, no margin */
+}
+body[data-theme='dark'] .sidebar-overlay {
+  background: var(--sidebar-dark);
+}
+
 .chat-input-wrapper {
   position: absolute;
   left: 50%;
@@ -85,7 +116,22 @@ body[data-theme='dark'] .theme-toggle {
   display: flex;
   align-items: flex-end;
   background: transparent;
-  z-index: 5;
+  z-index: 100;
+  pointer-events: auto;
+  transition:
+    top 0.7s cubic-bezier(.4,0,.2,1),
+    bottom 0.7s cubic-bezier(.4,0,.2,1),
+    transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+.chat-input-wrapper.animate-pos {
+  transition:
+    top 0.7s cubic-bezier(.4,0,.2,1),
+    bottom 0.7s cubic-bezier(.4,0,.2,1),
+    transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+.chat-input-wrapper[style*="bottom"] {
+  top: auto !important;
+  transform: translateX(-50%) !important;
 }
 
 /* Auto-grow textarea styles */
@@ -107,9 +153,13 @@ body[data-theme='dark'] .theme-toggle {
   word-break: break-word;
   line-height: 1.5;
   scrollbar-width: none; /* Firefox */
+  pointer-events: auto;
 }
 .chat-input::-webkit-scrollbar {
-  display: none;
+  display: none !important;
+}
+.chat-input {
+  scrollbar-width: none !important;
 }
 
 body, html {
@@ -141,15 +191,15 @@ body[data-theme='dark'] .send-btn {
   color: var(--accent-dark);
 }
 
-/* Hint popup for empty input */
+/* Hint popup for empty input (above input field) */
 .hint-popup {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -56px;
-  background: rgba(0,0,0,0.04);
+  /* top is set inline from JS */
+  background: var(--accent-light); /* match sidebar-session-item hover background */
   border: 1px solid var(--primary-light);
-  color: var(--text-light);
+  color: var(--primary-light);
   border-radius: 10px;
   padding: 8px 12px;
   display: flex;
@@ -157,11 +207,13 @@ body[data-theme='dark'] .send-btn {
   gap: 8px;
   font-size: 0.95rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 101;
+  top: -56px !important;
 }
 body[data-theme='dark'] .hint-popup {
-  background: rgba(255,255,255,0.06);
+  background: var(--accent-dark); /* match sidebar-session-item hover dark */
   border-color: var(--accent-dark);
-  color: var(--text-dark);
+  color: #181818;
 }
 .hint-close {
   background: none;
@@ -179,6 +231,259 @@ body[data-theme='dark'] .hint-popup {
   right: 0;
 }
 
+/* Sidebar message: one line, ellipsis if too long */
+.sidebar-message {
+  margin: 64px 20px 0 20px; /* increased top margin to move below AI name */
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.04);
+  color: #222;
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  box-sizing: border-box;
+  /* Only one line shown, rest is ... */
+}
+body[data-theme='dark'] .sidebar-message {
+  background: rgba(255,255,255,0.07);
+  color: #eee;
+}
+
+/* Message above input field */
+.above-input-message {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  top: calc(55% - 48px);
+  background: var(--accent-light);
+  color: var(--primary-light);
+  font-size: 1.15rem;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  opacity: 1;
+  transition:
+    top 0.7s cubic-bezier(.4,0,.2,1),
+    opacity 0.5s cubic-bezier(.4,0,.2,1);
+  z-index: 1;
+  pointer-events: none;
+  max-width: 480px;
+  width: 80vw;
+}
+.above-input-message.animate-pos {
+  transition:
+    top 0.7s cubic-bezier(.4,0,.2,1),
+    opacity 0.5s cubic-bezier(.4,0,.2,1);
+}
+body[data-theme='dark'] .above-input-message {
+  background: var(--accent-dark);
+  color: #181818;
+}
+.above-input-message.move-up {
+  top: 44px;
+  opacity: 1;
+}
+
+/* Scrollable middle area for messages */
+.messages-scroll-area {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 110px;
+  bottom: 90px;
+  width: 70vw;
+  max-width: 600px;
+  min-width: 220px;
+  overflow-y: auto;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 8px;
+  scrollbar-width: none !important; /* Firefox */
+}
+.messages-scroll-area::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari */
+}
+body[data-theme='dark'] .messages-scroll-area::-webkit-scrollbar-thumb {
+  background: #23272f;
+}
+
+/* Individual message item */
+.message-item {
+  background: var(--accent-light);
+  color: var(--primary-light);
+  font-size: 1.08rem;
+  padding: 10px 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  word-break: break-word;
+  max-width: 100%;
+  transition: background 0.2s;
+}
+body[data-theme='dark'] .message-item {
+  background: var(--accent-dark);
+  color: #181818;
+}
+
+/* Add button style */
+.add-session-btn {
+  background: none;
+  border: none;
+  color: var(--primary-light);
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.18s;
+}
+.add-session-btn:hover {
+  color: #1565c0;
+}
+body[data-theme='dark'] .add-session-btn {
+  color: var(--accent-dark);
+}
+body[data-theme='dark'] .add-session-btn:hover {
+  color: #21e675;
+}
+
+/* Sidebar header row: AI name left, add button right */
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px 0 20px;
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+.sidebar-ai-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+body[data-theme='dark'] .sidebar-ai-name {
+  color: var(--accent-dark);
+}
+
+/* Session list in sidebar */
+.sidebar-session-list {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+/* Session item: all look the same, trash inside, flex row */
+.sidebar-session-item {
+  background: var(--sidebar-light);
+  color: #222;
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  text-align: left;
+  transition: background 0.18s, color 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: relative;
+}
+.sidebar-session-item.active,
+.sidebar-session-item:hover {
+  background: var(--accent-light);
+  color: var(--primary-light);
+}
+body[data-theme='dark'] .sidebar-session-item {
+  background: var(--sidebar-dark);
+  color: #eee;
+}
+body[data-theme='dark'] .sidebar-session-item.active,
+body[data-theme='dark'] .sidebar-session-item:hover {
+  background: var(--accent-dark);
+  color: #181818;
+}
+
+/* Session title inside button */
+.session-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Delete session button inside session item, color matches sidebar, but ensure icon is visible */
+.delete-session-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  margin-left: 8px;
+  color: #888; /* Use a visible neutral color for the icon */
+  transition: color 0.18s;
+}
+.sidebar-session-item.active .delete-session-btn,
+.sidebar-session-item:hover .delete-session-btn {
+  color: var(--primary-light);
+}
+body[data-theme='dark'] .delete-session-btn {
+  color: #bbb;
+}
+body[data-theme='dark'] .sidebar-session-item.active .delete-session-btn,
+body[data-theme='dark'] .sidebar-session-item:hover .delete-session-btn {
+  color: #181818; /* black for dark mode when selected/hover */
+}
+
+/* Smoother animation for position changes */
+.animate-pos {
+  transition:
+    top 0.7s cubic-bezier(.4,0,.2,1),
+    bottom 0.7s cubic-bezier(.4,0,.2,1),
+    transform 0.7s cubic-bezier(.4,0,.2,1),
+    opacity 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* Tiny footer at bottom center, text color matches sidebar, no background, 5px from bottom */
+.footer {
+  position: fixed;
+  left: 50%;
+  bottom: 0px;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: 120px;
+  background: none;
+  color: var(--sidebar-light);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0;
+  border-radius: 0;
+  z-index: 120;
+  box-shadow: none;
+}
+body[data-theme='dark'] .footer {
+  color: var(--sidebar-dark);
+  background: none;
+}
+
+/* Responsive sidebar */
 @media (max-width: 600px) {
   .theme-toggle {
     font-size: 1.5rem;
@@ -204,5 +509,11 @@ body[data-theme='dark'] .hint-popup {
     font-size: 1.3rem;
     right: 8px;
     bottom: 8px;
+  }
+  .sidebar-overlay {
+    width: 60vw;
+    min-width: 120px;
+    max-width: 98vw;
+    /* No border radius */
   }
 }
