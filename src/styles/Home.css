@@ -142,29 +142,33 @@ body[data-theme='dark'] .sidebar-overlay {
   background: var(--background-light);
   color: var(--text-light);
   border-radius: 18px;
-  padding: 16px 56px 16px 16px;
-  font-size: 1.1rem;
-  min-height: 48px;
-  max-height: 160px;
+  padding: 14px 60px 14px 18px;
+  font-size: 1.05rem;
+  min-height: 52px;
+  max-height: 192px;
   box-sizing: border-box;
   outline: none;
-  transition: border 0.2s, height 0.2s;
+  transition: border 0.2s;
   overflow-y: auto;
+  overflow-x: hidden;
+  word-wrap: break-word;
   word-break: break-word;
-  line-height: 1.5;
-  scrollbar-width: none; /* Firefox */
+  line-height: 1.6;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
   pointer-events: auto;
+  /* Ensure text doesn't get cut off at bottom */
+  display: block;
 }
+
+/* Hide scrollbar for Chrome, Safari and Edge */
 .chat-input::-webkit-scrollbar {
-  display: none !important;
-}
-.chat-input {
-  scrollbar-width: none !important;
+  display: none;
 }
 
 body, html {
   overflow: hidden !important;
 }
+
 body[data-theme='dark'] .chat-input {
   border-color: var(--accent-dark);
   background: var(--background-dark);
@@ -174,19 +178,29 @@ body[data-theme='dark'] .chat-input {
 /* Always bottom right for send button */
 .send-btn {
   position: absolute;
-  right: 12px;
-  bottom: 10px;
+  right: 14px;
+  bottom: 14px;
   background: none;
   border: none;
   color: var(--primary-light);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
   z-index: 10;
-  padding: 0;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.15s ease;
 }
+
+.send-btn:hover {
+  transform: scale(1.1);
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+}
+
 body[data-theme='dark'] .send-btn {
   color: var(--accent-dark);
 }
@@ -502,13 +516,14 @@ body[data-theme='dark'] .footer {
   }
   .chat-input {
     font-size: 1rem;
-    padding: 12px 44px 12px 12px;
-    min-height: 40px;
+    padding: 12px 50px 12px 14px;
+    min-height: 44px;
+    line-height: 1.5;
   }
   .send-btn {
-    font-size: 1.3rem;
-    right: 8px;
-    bottom: 8px;
+    font-size: 1.25rem;
+    right: 12px;
+    bottom: 12px;
   }
   .sidebar-overlay {
     width: 60vw;

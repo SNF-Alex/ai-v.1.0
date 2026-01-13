@@ -1,0 +1,51 @@
+# Backend Requirements for AI Assistant
+# Production Ready with Google Cloud Integration
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Google Cloud Services
+google-cloud-storage==2.14.0
+google-cloud-firestore==2.14.0
+google-cloud-secret-manager==2.18.0
+google-auth==2.27.0
+google-cloud-logging==3.9.0
+
+# AI & NLP
+openai==1.10.0
+langchain==0.1.5
+transformers==4.37.0
+torch==2.1.2
+
+# Security & Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+cryptography==42.0.0
+
+# Email Services
+sendgrid==6.11.0
+python-sendgrid==0.6.0
+
+# Data Handling
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# CORS
+fastapi-cors==0.0.6
+
+# Rate Limiting
+slowapi==0.1.9
+
+# Monitoring & Logging
+python-json-logger==2.0.7
+
+# Utilities
+python-dateutil==2.8.2
+requests==2.31.0
+aiofiles==23.2.1
+
+# Content Moderation
+better-profanity==0.7.0

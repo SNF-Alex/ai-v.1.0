@@ -12,22 +12,33 @@ function Home() {
   // Sessions state: array of { messages: [] }
   const [sessions, setSessions] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("sessions") || "[]") || [{ messages: [] }];
+      const stored = localStorage.getItem("sessions");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+      return [{ messages: [] }];
     } catch {
       return [{ messages: [] }];
-    }
-  });
+    }  });
   const [activeSession, setActiveSession] = useState(0);
   const [theme, setTheme] = useState("light");
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
-  const baseHeightRef = useRef(48); // fallback to 48px
+  const baseHeightRef = useRef(52); // matches CSS min-height
   const [showHint, setShowHint] = useState(false);
   const hintTimeoutRef = useRef(null);
-  const [inputFocused, setInputFocused] = useState(false);
 
   // Fix ESLint: useMemo for messages
-  const messages = useMemo(() => sessions[activeSession]?.messages || [], [sessions, activeSession]);
+  const messages = useMemo(() => {
+    const session = sessions[activeSession];
+    if (!session || !Array.isArray(session.messages)) {
+      return [];
+    }
+    return session.messages;
+  }, [sessions, activeSession]);
 
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
@@ -50,12 +61,11 @@ function Home() {
       document.body.appendChild(nomoduleScript);
     }
   }, []);
-
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  const MAX_HEIGHT = 192; // ~20% bigger than previous 160px
+  const MAX_HEIGHT = 192; // Matches CSS max-height
 
   // Save sessions to localStorage
   useEffect(() => {
@@ -133,20 +143,18 @@ function Home() {
         messages: [...updated[activeSession].messages, msg]
       };
       return updated;
-    });
-    setInput("");
+    });    setInput("");
     if (inputRef.current) {
-      const minH = baseHeightRef.current || 48;
+      const minH = baseHeightRef.current || 52;
       inputRef.current.style.height = `${minH}px`;
       inputRef.current.focus();
     }
   };
-
   // Measure base height on mount
   useEffect(() => {
     if (inputRef.current) {
       // Capture the natural single-line height as the baseline
-      baseHeightRef.current = inputRef.current.clientHeight || 48;
+      baseHeightRef.current = inputRef.current.clientHeight || 52;
       inputRef.current.style.height = `${baseHeightRef.current}px`;
     }
   }, []);
@@ -155,7 +163,7 @@ function Home() {
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
-      const minH = baseHeightRef.current || 48;
+      const minH = baseHeightRef.current || 52;
       const next = Math.max(minH, Math.min(inputRef.current.scrollHeight, MAX_HEIGHT));
       inputRef.current.style.height = `${next}px`;
     }
@@ -283,8 +291,7 @@ function Home() {
               <IonIcon name="close" />
             </button>
           </div>
-        )}
-        <textarea
+        )}        <textarea
           ref={inputRef}
           className="chat-input"
           value={input}
@@ -293,8 +300,6 @@ function Home() {
           rows={1}
           placeholder="Type your message..."
           style={{ fontSize: "1.05rem" }}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
         />
         <button className="send-btn" onClick={handleSend} aria-label="Send">
           <IonIcon name="send" style={{ fontSize: "1.25rem" }} />
